@@ -219,7 +219,7 @@ class Config:
                     "case_type": "捷運站",
                     "distance": 1000,
                     "search_methods": {
-                        "type": "autocomplete_only",
+                        "type": "nearby_only",
                         "nearby": {
                             "params": {
                                 "includedTypes": ["subway_station", "transit_station"],
@@ -281,8 +281,8 @@ class Config:
                         },
                         "autocomplete": {
                             "params": {
-                                "input": "高鐵站",
-                                "includedTypes": ["establishment","point_of_interest","train_station"]
+                                "input": "高鐵",
+                                "includedTypes": ["transit_station","point_of_interest","establishment","train_station"]
                             }
                         }
                     }
@@ -295,10 +295,10 @@ class Config:
             "distance": 3000,
             "cases": [
                 {
-                    "case_type": "高速公路交流道",
+                    "case_type": "國道交流道",
                     "distance": 3000,
                     "search_methods": {
-                        "type": "autocomplete_only",
+                        "type": "local_only",
                         "autocomplete": {
                             "params": {
                                 "input": "交流道",
@@ -311,7 +311,7 @@ class Config:
                     "case_type": "快速道路交流道",
                     "distance": 3000,
                     "search_methods": {
-                        "type": "autocomplete_only",
+                        "type": "local_only",
                         "autocomplete": {
                             "params": {
                                 "input": "快速道",

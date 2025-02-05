@@ -66,7 +66,7 @@ class LandmarkSearch:
                             )
                             
                             #print("[DEBUG] nearby_search() 回傳:", nearby_results)
-                            if nearby_results and 'places' in nearby_results:  # 確保 'places' 存在
+                            if nearby_results and 'places' in nearby_results :  # 確保 'places' 存在
                                 #print("places count:", len(nearby_results['places']))
                                 for place in nearby_results['places']:
                                     data_store1= {
@@ -78,6 +78,16 @@ class LandmarkSearch:
                                             'radius': None,
                                             'feature_types': case['case_type']
                                         }
+                                    
+                                    ## 特例處理 美廉社不是超市 是便利商店
+                                    if data_store1['name'].str.contains('美廉社'):
+                                        data_store1.update({
+                                            'case_type': "009",
+                                            'feature_types': "便利超商"
+                                            }
+                                        )
+                                    else:
+                                        pass
                                     
                                     print("Adding nearby landmarks to landmarks1:", data_store1)
                                     landmarks.append(data_store1)
@@ -108,6 +118,7 @@ class LandmarkSearch:
                                         'radius': None,
                                         'feature_types': case['case_type']
                                     }
+                                    
                                     print("Adding auto landmarks to landmarks:", data_store)
                                     if data_store:
                                         landmarks.append(data_store)
@@ -158,7 +169,9 @@ class LandmarkSearch:
                                     }
                         else:
                             pass
-                            
+                    
+                    
+                    
                     ## google map searched items--
                     # 使用字典來存儲唯一的地標，key 為 (place_id, feature_types) 組合
                     unique_landmarks = {}
