@@ -219,7 +219,7 @@ class Config:
                     "case_type": "捷運站",
                     "distance": 1000,
                     "search_methods": {
-                        "type": "nearby_only",
+                        "type": "local_only",
                         "nearby": {
                             "params": {
                                 "includedTypes": ["subway_station", "transit_station"],
