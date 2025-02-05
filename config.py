@@ -269,10 +269,10 @@ class Config:
                     }
                 },
                 {
-                    "case_type": "高鐵站",
+                    "case_type": "高鐵",
                     "distance": 1000,
                     "search_methods": {
-                        "type": "autocomplete_only",
+                        "type": "local_only",
                         "nearby": {
                             "params": {
                                 "includedTypes": ["bus_station"],
