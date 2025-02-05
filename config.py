@@ -212,7 +212,7 @@ class Config:
     # 地標類型與搜尋參數設定
     LANDMARK_TYPES = {
         "001": {  # 交通類型
-            "name": "交通設施周遭1公里內",
+            "name": "捷運站/台鐵站/客運站/運輸中心(轉運站)1公里內/高鐵車站2公里內",
             "case_kind":"A",
             "cases": [
                 {
@@ -270,7 +270,7 @@ class Config:
                 },
                 {
                     "case_type": "高鐵站",
-                    "distance": 1000,
+                    "distance": 2000,
                     "search_methods": {
                         "type": "local_only",
                         "nearby": {
@@ -462,8 +462,9 @@ class Config:
                         "nearby": {
                             "params": {
                                 "includedTypes": ["park"],
-                                "maxResultCount": 3,
-                                "includedPrimaryTypes": ["park"]
+                                "maxResultCount": 2,
+                                "includedPrimaryTypes": ["park","geocode"]
+                                
                             }
                         }
                     }
@@ -583,10 +584,8 @@ class Config:
                             "params": {
                                 "includedTypes": ["convenience_store"],
                                 "maxResultCount": 1,
-                                "includedPrimaryTypes": ["convenience_store", "store"],
-                                "excludedPrimaryTypes":["supermarket"],
-                                
-                                
+                                "includedPrimaryTypes": ["convenience_store"],
+                                "excludedPrimaryTypes":["supermarket"]
                             },
                         "autocomplete": {
                             "params": {
@@ -601,7 +600,7 @@ class Config:
                     "case_type": "地方診所",
                     "distance": 500,
                     "search_methods": {
-                        "type": "nearby_first",
+                        "type": "nearby_only",
                         "nearby": {
                             "params": {
                                 "includedTypes": ["doctor","dental_clinic"],
@@ -629,10 +628,10 @@ class Config:
                     "case_type": "墳墓",
                     "distance": 200,
                     "search_methods": {
-                        "type": "nearby_first",
+                        "type": "autocomplete_only",
                         "nearby": {
                             "params": {
-                                "includedTypes": ["cemetery",],
+                                "includedTypes": ["cemetery"],
                                 "maxResultCount": 1
                             }
                         },
@@ -670,7 +669,7 @@ class Config:
                         "type": "nearby_only",
                         "nearby": {
                             "params": {
-                                "includedTypes": ["funeral_home",],
+                                "includedTypes": ["funeral_home"],
                                 "maxResultCount": 1,
                                 "includedPrimaryTypes": ["funeral_home"]
                             }
@@ -767,7 +766,8 @@ class Config:
                             "params": {
                                 "includedTypes": ["gas_station"],
                                 "maxResultCount": 1,
-                                "includedPrimaryTypes": ["gas_station"]
+                                "includedPrimaryTypes": ["gas_station"],
+                                "excludedPrimaryTypes":[]
                             }
                         }
                     }

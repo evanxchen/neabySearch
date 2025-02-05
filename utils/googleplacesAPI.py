@@ -96,7 +96,7 @@ class GooglePlacesAPI:
             return None
 
     def nearby_search(self, latitude: float, longitude: float, radius: float,
-                     included_types: list = None, max_results: int = 20) -> Optional[Dict]:
+                     included_types: list = None, includedPrimaryTypes:list=None, excludedPrimaryTypes:list=None, max_results: int = 1) -> Optional[Dict]:
         """
         使用 Google Places Nearby Search API 搜尋地標
         
@@ -118,6 +118,12 @@ class GooglePlacesAPI:
         
         if included_types:
             search_params["includedTypes"] = included_types
+        
+        if includedPrimaryTypes:
+            search_params['includedPrimaryTypes']=includedPrimaryTypes
+        
+        if excludedPrimaryTypes:
+            search_params['excludedPrimaryTypes']=excludedPrimaryTypes
         
         headers = {
             "Content-Type": "application/json; charset=utf-8",

@@ -57,13 +57,21 @@ class LandmarkSearch:
                     if (search_method_type=='nearby_only' or search_method_type =='nearby_first'):
                         if 'nearby' in case['search_methods']:
                             nearby_params = case['search_methods']['nearby']['params']
-                            nearby_results = google_places.nearby_search(
-                                latitude=lat,
-                                longitude=lon,
-                                radius=case['distance'],
-                                included_types=nearby_params['includedTypes'],
-                                max_results=nearby_params['maxResultCount']
-                            )
+                            search_params = {
+                                "latitude":lat,
+                                "longitude":lon,
+                                "radius":case['distance'],
+                                "included_types":nearby_params['includedTypes'],
+                            }
+                            if "includedPrimaryTypes" in nearby_params:
+                                search_params.update({
+                                    "includedPrimaryTypes": nearby_params['includedPrimaryTypes']
+                                })
+                            if "excludedPrimaryTypes" in nearby_params:
+                                search_params.update({
+                                    "excludedPrimaryTypes": nearby_params['excludedPrimaryTypes']
+                                })
+                            nearby_results = google_places.nearby_search(**search_params)
                             
                             #print("[DEBUG] nearby_search() 回傳:", nearby_results)
                             if nearby_results and 'places' in nearby_results :  # 確保 'places' 存在
@@ -80,14 +88,8 @@ class LandmarkSearch:
                                         }
                                     
                                     ## 特例處理 美廉社不是超市 是便利商店
-                                    if data_store1['name'].str.contains('美廉社'):
-                                        data_store1.update({
-                                            'case_type': "009",
-                                            'feature_types': "便利超商"
-                                            }
-                                        )
-                                    else:
-                                        pass
+                                    if '美廉社' in data_store1['name']:
+                                        continue
                                     
                                     print("Adding nearby landmarks to landmarks1:", data_store1)
                                     landmarks.append(data_store1)
