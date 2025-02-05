@@ -59,14 +59,14 @@ class Config:
     # 定義每種地標類型包含的 Google Places types
     PLACE_TYPE_MAPPING = {
         "001": [  # 交通類型
-            {
-                'case_type': '捷運站',
-                'case_kind': 'A',
-                "search_types": ["subway_station", "transit_station"],
-                "check_types": [
-                    ["establishment", "point_of_interest", "subway_station"]
-                ]
-            },
+            # {
+            #     'case_type': '捷運站',
+            #     'case_kind': 'A',
+            #     "search_types": ["subway_station", "transit_station"],
+            #     "check_types": [
+            #         ["establishment", "point_of_interest", "subway_station"]
+            #     ]
+            # },
             {
                 'case_type': '台鐵站',
                 'case_kind': 'A',
@@ -269,7 +269,7 @@ class Config:
                     }
                 },
                 {
-                    "case_type": "高鐵",
+                    "case_type": "高鐵站",
                     "distance": 1000,
                     "search_methods": {
                         "type": "local_only",
