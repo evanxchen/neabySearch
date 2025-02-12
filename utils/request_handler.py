@@ -29,7 +29,7 @@ def validate_request(data):
         return {"status": "error", "message": "lon 參數必須是 120~123 之間的浮點數"}
 
     # 檢查 case_id 是否至少 11 碼
-    if not isinstance(case_id, str) or not re.match(r"^\d{11,}$", case_id):
+    if not isinstance(case_id, str) or not re.match(r"^[AB]\d{3}-\d{3}-\d{2}-\d{3}$", case_id):
         return {"status": "error", "message": "case_id 參數必須是至少 11 碼的數字字串"}
 
     # 檢查 form_type 是否為 "A" 或 "B"
