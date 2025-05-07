@@ -15,7 +15,6 @@ class TimeoutManager:
         with self.lock:
             if request_id in self.requests:
                 return
-            
             timer = threading.Timer(timeout, self.remove_request, args=[request_id])
             self.requests[request_id] = timer
             timer.start()
