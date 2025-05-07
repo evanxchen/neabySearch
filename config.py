@@ -7,9 +7,9 @@ class Config:
     
     # 不同 Form 類型對應的地標分數
     LANDMARK_SCORES = {
-       "A": { ## 危老都更
+       "D": { ## 危老都更
            "001": 7,  # 交通類型分數
-           "002": 7,   # 購物類型分數
+           "002": 5,   # 購物類型分數
            "003": 3,
            "004": 0,
            "005": 8,
@@ -31,7 +31,7 @@ class Config:
            "021": -5,
            "022": 0
        },
-       "B": {   ## 銷售型土建融
+       "C": {   ## 銷售型土建融
            "001": 10,  # 交通類型分數
            "002": 8,   # 購物類型分數
            "003": 4,
@@ -59,14 +59,6 @@ class Config:
     # 定義每種地標類型包含的 Google Places types
     PLACE_TYPE_MAPPING = {
         "001": [  # 交通類型
-            # {
-            #     'case_type': '捷運站',
-            #     'case_kind': 'A',
-            #     "search_types": ["subway_station", "transit_station"],
-            #     "check_types": [
-            #         ["establishment", "point_of_interest", "subway_station"]
-            #     ]
-            # },
             {
                 'case_type': '台鐵站',
                 'case_kind': 'A',
@@ -212,29 +204,15 @@ class Config:
     # 地標類型與搜尋參數設定
     LANDMARK_TYPES = {
         "001": {  # 交通類型
-            "name": "捷運站/台鐵站/客運站/運輸中心(轉運站)1公里內/高鐵車站2公里內",
+            "name": "捷運站／台鐵站／客運站／運輸中心（轉運站）1公里內/高鐵車站 2公里內",
             "case_kind":"A",
             "cases": [
                 {
                     "case_type": "捷運站",
                     "distance": 1000,
-                    "search_methods": {
-                        "type": "local_only",
-                        "nearby": {
-                            "params": {
-                                "includedTypes": ["subway_station", "transit_station"],
-                                "maxResultCount": 5,
-                                
-                            }
-                        },
-                        "autocomplete": {
-                            "params": {
-                                "input": "捷運",
-                                "includedTypes": ["subway_station","establishment","point_of_interest"]
-                            }
-                        }
+                    "search_methods": {"type": "local_only"}
                     }
-                },
+                ,
                 {
                     "case_type": "台鐵站",
                     "distance": 1000,
@@ -258,34 +236,32 @@ class Config:
                     "case_type": "客運站",
                     "distance": 1000,
                     "search_methods": {
-                        "type": "nearby_only",
-                        "nearby": {
+                        "type": "autocomplete_only",
+                        "autocomplete": {
                             "params": {
-                                "includedTypes": ["bus_station","transit_station"],
-                                "maxResultCount": 1,
-                                "includedPrimaryTypes": ["bus_station","transit_station"]
-                            }
-                        }
+                                "input": "客運",
+                                "includedTypes": ["transit_station", "bus_station"]
+                                        }
+                                    }
                     }
                 },
                 {
-                    "case_type": "高鐵站",
-                    "distance": 2000,
+                    "case_type": "運輸中心(轉運站)",
+                    "distance": 1000,
                     "search_methods": {
-                        "type": "local_only",
-                        "nearby": {
-                            "params": {
-                                "includedTypes": ["bus_station"],
-                                "maxResultCount": 1
-                            }
-                        },
+                        "type": "autocomplete_only",
                         "autocomplete": {
                             "params": {
-                                "input": "高鐵",
-                                "includedTypes": ["transit_station","point_of_interest","establishment","train_station"]
-                            }
-                        }
-                    }
+                                "input": "轉運",
+                                "includedTypes": ["transit_station"]
+                                        }
+                                    }
+                                }
+                },
+                {
+                    "case_type": "高鐵站",
+                    "distance": 1000,
+                    "search_methods": {"type": "local_only"}
                 }
             ]
         },
@@ -301,7 +277,7 @@ class Config:
                         "type": "local_only",
                         "autocomplete": {
                             "params": {
-                                "input": "交流道",
+                                "input": "國道交流道",
                                 "includedTypes": ["geocode","political"]
                             }
                         }
@@ -314,7 +290,7 @@ class Config:
                         "type": "local_only",
                         "autocomplete": {
                             "params": {
-                                "input": "快速道",
+                                "input": "快速道路交流道",
                                 "includedTypes": ["geocode","political"]
                             }
                         }
@@ -323,7 +299,7 @@ class Config:
             ]
         },
         "003": {  #公車站牌
-            "name": "公車站牌500公尺內",
+            "name": "公車站牌500公尺內/正面臨路路寬20M(含)以上",
             "case_kind":"A",
             "distance": 500,
             "cases": [
@@ -341,28 +317,85 @@ class Config:
                         }
                     }
                 }]
-        } ,
+        },
         "005": { #＃＃超級市場
-            "name": "超級市場",
+            "name": "超級市場、傳統市場、各類商店市集 1公里內",
             "case_kind":"B",
             "cases": [
                 {
-                    "case_type": "超級市場",
+                    "case_type": "超級市場",  ##大賣場
                     "distance": 1000,
                     "search_methods": {
-                        "type": "nearby_first",
-                        "nearby": {
-                            "params": {
-                                "includedTypes": ["supermarket"],
-                                "maxResultCount": 3,
-                                "includedPrimaryTypes": ["supermarket","grocery_store"],
-                                "excludedPrimaryTypes": ["convenience_store","restaurant","deli"]
-                            }
-                        },
+                        "type": "autocomplete_only",
                         "autocomplete":{
                             "params": {
-                                "input": "超市",
-                                "includedTypes": ["point_of_interest","establishment","supermarket","grocery_store","store"]
+                                "input": "好市多",
+                                "includedTypes": ["point_of_interest","establishment","warehouse_store","market", "supermarket"],   
+                            }
+                        }
+                    }
+                },
+                {
+                    "case_type": "超級市場",  ##大賣場
+                    "distance": 1000,
+                    "search_methods": {
+                        "type": "autocomplete_only",
+                        "autocomplete":{
+                            "params": {
+                                "input": "家樂福",
+                                "includedTypes": ["point_of_interest","establishment","warehouse_store","market", "supermarket"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "case_type": "超級市場",  ##大賣場
+                    "distance": 1000,
+                    "search_methods": {
+                        "type": "autocomplete_only",
+                        "autocomplete":{
+                            "params": {
+                                "input": "大潤發",
+                                "includedTypes": ["warehouse_store", "supermarket"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "case_type": "超級市場",  ##大賣場
+                    "distance": 1000,
+                    "search_methods": {
+                        "type": "autocomplete_only",
+                        "autocomplete":{
+                            "params": {
+                                "input": "愛買",
+                                "includedTypes": ["market", "supermarket"]  
+                            }
+                        }
+                    }
+                },
+                {
+                    "case_type": "超級市場",  ##大賣場
+                    "distance": 1000,
+                    "search_methods": {
+                        "type": "autocomplete_only",
+                        "autocomplete":{
+                            "params": {
+                                "input": "大買家",
+                                "includedTypes": ["market", "supermarket"]  
+                            }
+                        }
+                    }
+                },
+                {
+                    "case_type": "超級市場",  ##大賣場
+                    "distance": 1000,
+                    "search_methods": {
+                        "type": "autocomplete_only",
+                        "autocomplete":{
+                            "params": {
+                                "input": "迪卡儂",
+                                "includedTypes": ["warehouse_store","market", "supermarket"]
                             }
                         }
                     }
@@ -375,26 +408,41 @@ class Config:
                         "autocomplete": {
                             "params": {
                                 "input": "市場",
-                                "includedTypes": ["point_of_interest","market","establishment"],
+                                "includedTypes": ["point_of_interest","market","establishment", "tourist_attraction"]  ##不包含餐廳跟小吃店
                             }
                         }
                     }
                 },
                 {
-                    "case_type": "各類商店市集",
+                    "case_type": "各類商店市集",  ##包含超市跟其他商店
                     "distance": 1000,
                     "search_methods": {
                         "type": "nearby_only",
                         "nearby": {
                             "params": {
-                                "includedTypes": ["clothing_store","electronics_store","book_store","home_goods_store","shoe_store"],
+                                "includedTypes": ["supermarket","store", "grocery_store"],
                                 "maxResultCount": 3,
-                                "includedPrimaryTypes": ["clothing_store","electronics_store","book_store","home_goods_store","shoe_store"]
-                                                
+                                "includedPrimaryTypes": ["supermarket","grocery_store"],
+                                "excludedPrimaryTypes":["convenience_store", "restaurant", "deli"]
                     }
                         }
                     }
                 },
+                {
+                    "case_type": "各類商店市集",  ##包含超市跟其他商店
+                    "distance": 1000,
+                    "search_methods": {
+                        "type": "nearby_only",
+                        "nearby": {
+                            "params": {
+                                "includedTypes": ["store", "home_goods_store", "hardware_store", "electronics_store"],
+                                "maxResultCount": 3,
+                                "includedPrimaryTypes": ["store"],
+                                "excludedPrimaryTypes":["convenience_store", "restaurant", "deli"] 
+                    }
+                        }
+                    }
+                }
             ]
         },
         "006": {
@@ -410,7 +458,8 @@ class Config:
                             "params": {
                                 "includedTypes": ["university","primary_school","secondary_school"],
                                 "maxResultCount": 2,
-                                "includedPrimaryTypes": ["university","primary_school","secondary_school"]
+                                "includedPrimaryTypes": ["university","primary_school","secondary_school"],
+                                "excludedPrimaryTypes":["store","market","child_care_agency","parking"]
                             }
                         }
                     }
@@ -462,9 +511,9 @@ class Config:
                         "nearby": {
                             "params": {
                                 "includedTypes": ["park"],
-                                "maxResultCount": 2,
-                                "includedPrimaryTypes": ["park","geocode"]
-                                
+                                "maxResultCount": 3,
+                                "includedPrimaryTypes": ["park", "tourist_attraction"],
+                                "excludedPrimaryTypes":["store","market"]
                             }
                         }
                     }
@@ -504,7 +553,7 @@ class Config:
                             "params": {
                                 "includedTypes": ["bank"],
                                 "maxResultCount": 1,
-                                "includedPrimaryTypes": ["bank"]
+                                "includedPrimaryTypes": ["bank", "finance"]
                                 
                             }
                         }
@@ -585,7 +634,9 @@ class Config:
                                 "includedTypes": ["convenience_store"],
                                 "maxResultCount": 1,
                                 "includedPrimaryTypes": ["convenience_store"],
-                                "excludedPrimaryTypes":["supermarket"]
+                                "excludedPrimaryTypes":["supermarket"],
+                                
+                                
                             },
                         "autocomplete": {
                             "params": {
@@ -600,7 +651,7 @@ class Config:
                     "case_type": "地方診所",
                     "distance": 500,
                     "search_methods": {
-                        "type": "nearby_only",
+                        "type": "nearby_first",
                         "nearby": {
                             "params": {
                                 "includedTypes": ["doctor","dental_clinic"],
@@ -614,7 +665,7 @@ class Config:
             ]        
         },
         "011": {
-            "name": "火葬場",
+            "name": "火葬場、墳墓(福地)(200公尺內)",
             "case_kind":"C",
             "cases": [
                 {
@@ -631,13 +682,13 @@ class Config:
                         "type": "autocomplete_only",
                         "nearby": {
                             "params": {
-                                "includedTypes": ["cemetery"],
+                                "includedTypes": ["cemetery",],
                                 "maxResultCount": 1
                             }
                         },
                         "autocomplete": {
                             "params": {
-                                "input": "公墓",
+                                "input": "墓",
                                 "includedTypes": ["cemetery"]
                             }
                         }
@@ -646,7 +697,7 @@ class Config:
             ]
         },
         "012": {
-            "name": "焚化爐",
+            "name": "焚化爐(200公尺內)",
             "case_kind":"C",
             "cases": [
                 {
@@ -669,7 +720,7 @@ class Config:
                         "type": "nearby_only",
                         "nearby": {
                             "params": {
-                                "includedTypes": ["funeral_home"],
+                                "includedTypes": ["funeral_home",],
                                 "maxResultCount": 1,
                                 "includedPrimaryTypes": ["funeral_home"]
                             }
@@ -697,15 +748,14 @@ class Config:
                     }
                 },
                 {
-                    "case_type": "酒吧、PUB、夜店",
+                    "case_type": "PUB、夜店",
                     "distance": 50,
                     "search_methods": {
                         "type": "nearby_only",
                         "nearby": {
                             "params": {
-                                "includedTypes": ["wine_bar", 'bar', 'pub', 'dance_hall', "night_club"],
-                                "maxResultCount": 1,
-                                "includedPrimaryTypes": ["bar", "pub"]
+                                "includedTypes": ['pub', 'dance_hall', "night_club"],
+                                "maxResultCount": 1
                             }
                         }
                     }
@@ -766,8 +816,7 @@ class Config:
                             "params": {
                                 "includedTypes": ["gas_station"],
                                 "maxResultCount": 1,
-                                "includedPrimaryTypes": ["gas_station"],
-                                "excludedPrimaryTypes":[]
+                                "includedPrimaryTypes": ["gas_station"]
                             }
                         }
                     }
@@ -927,7 +976,7 @@ class Config:
                 ]
         },
         "020": {
-            "name": "垃圾場、資源回收場",
+            "name": "垃圾場、資源回收場(50公尺內)",
             "case_kind":"C",
             "cases": [
                 {
@@ -937,7 +986,7 @@ class Config:
                      "type": "autocomplete_only",
                          "autocomplete": {
                             "params": {
-                                "input": "垃圾場",
+                                "input": "掩埋場",
                                 "includedTypes": ["establishment", "point_of_interest"]
                             }
                         }
