@@ -49,7 +49,6 @@ class LandmarkSearch:
                 # 遍歷每個 case
                 for case in type_info['cases']:
                     print(f"[DEBUG] case_type: {case_type}, case: {case}")
-                    
                     search_method_type = case['search_methods']['type']
                     found_in_nearby = False
                     
@@ -67,17 +66,49 @@ class LandmarkSearch:
                                 search_params.update({
                                     "includedPrimaryTypes": nearby_params['includedPrimaryTypes']
                                 })
-                            if "excludedPrimaryTypes" in nearby_params:
-                                search_params.update({
-                                    "excludedPrimaryTypes": nearby_params['excludedPrimaryTypes']
-                                })
+                            # if "excludedPrimaryTypes" in nearby_params:
+                            #     search_params.update({
+                            #         "excludedPrimaryTypes": nearby_params['excludedPrimaryTypes']
+                            #     })
                             nearby_results = google_places.nearby_search(**search_params)
                             
-                            print("[DEBUG] nearby_search() 回傳:", nearby_results)
-                            if nearby_results and 'places' in nearby_results:  # 確保 'places' 存在
+                            #print("[DEBUG] nearby_search() 回傳:", nearby_results['places'])
+                            
+                            if nearby_results and 'places' in nearby_results:
                                 #print("places count:", len(nearby_results['places']))
                                 for place in nearby_results['places']:
-                                    data_store1= {
+                                    if case_type == "005" and case['case_type'] == "各類商店市集" :
+                                        brandnames = ["寶雅", "小北", "迪卡儂", "光南", "五金","燦坤","宜得利", "特力屋", "HOLA","宜家"]
+                                        if not any(s in place['displayName']['text'] for s in brandnames):
+                                            continue   ## 跳過
+                                        if 'primaryTypeDisplayName' in place:
+                                            if not any(s in ['超級市場', "居家用品店", "商店", "百貨公司"] for s in place['primaryTypeDisplayName']['text']):
+                                                   continue 
+                                    if case_type == "006" and case['case_type'] == "學校":
+                                        if 'displayName' in place:
+                                            school_type_keywords = ["國小", "小學", "大專院校", "高中", "大學", "國中", "國民小學", "專科"]
+                                            non_school_keywords = ["補習班", "美語", "文理", "教室", "文教", "補習", "外語", "安親", "公司", 
+                                                                  "活動中心", "停車場", "幼兒", "留學", "代辦", "中心", "工作室", "機構", 
+                                                                  "演藝廳", "何嘉仁", "圖書館"]
+                                            school_name_keywords = ['國民小學', "國小", "中學", "中小學", "中等學校", "專科學校", "陸軍", 
+                                                                   "國際學校", "高中", "大學", "國中", "技術學院", "科技大學", "國立", 
+                                                                   "市立", "學校", "高工", "家商", "職業學校", "實驗", "進修推廣", 
+                                                                   "美國學校", "特殊教育" ]
+                                            if any(keyword in place['displayName']['text'] for keyword in non_school_keywords):
+                                                continue
+                                            if not any(keyword in place['primaryTypeDisplayName']['text'] for keyword in school_type_keywords):
+                                                continue
+                                            if not any(keyword in place['displayName']['text'] for keyword in school_name_keywords):
+                                                continue
+                                            
+                                    if case_type == "007" and case['case_type'] == "公園" :
+                                        if '公園' not in place['displayName']['text']:
+                                            continue
+                                            
+                                    if case_type == '014' and case['case_type']=='遊藝場':
+                                        if place['addressComponents']['types']=='subpremise':  ## 在樓層裡面的不算
+                                            continue
+                                    data_store1 = {
                                             'case_type': case_type,
                                             'case_kind':type_info['case_kind'],
                                             'place_id': place['id'],
@@ -86,32 +117,9 @@ class LandmarkSearch:
                                             'radius': None,
                                             'feature_types': case['case_type']
                                         }
-
-                                    ## 各類商店市集包含一般小型超市~
-                                    if case_type == "005" and case['case_type']== "各類商店市集" :
-                                        if any(s not in ['超級市場', "居家用品店", "商店", "百貨公司"] for s in place['primaryTypeDisplayName']['text']):
-                                               continue
-                                        if any(s not in ["全聯", "家樂福", "寶雅", "小北", "迪卡儂", "光南", "五金","燦坤","宜得利", "特力屋", "HOLA"] for s in place['displayName']['text']):
-                                            continue
-
-                                    if case_type== "006" and case['case_type'] == "學校":
-                                        if any(s not in ['小學', "大專院校", "高中", "大學", "國中"] for s in  place['primaryTypeDisplayName']['text']):
-                                            continue
-                                        if any(s in ["補習班", "美語", "文理", "教室", "文教", "補習", "美語", "外語", "安親", "公司","活動中心", "停車場","幼兒","留學", "代辦", "中心", "工作室", "教室","機構","演藝廳", "何嘉仁"]for s in place['displayName']['text']):
-                                            continue
-                                        if any(s not in ['國民小學', "中學", "中小學", "中等學校", "專科學校", "陸軍", "國際學校", "高中", "大學", "國中", "技術學院", "科技大學","國立","市立", "學校","高工", "家商","職業學校", "學校", "實驗","進修推廣", "美國學校", "特殊教育"] for s in place['displayName']['text']):
-                                            continue
-
-                                    if case_type == "007" and case['case_type']== "公園" :
-                                        if any(s not in ["公園"] for s in place['displayName']['text']):
-                                            continue
-
-                                    if case_type == '014' and case['case_type']=='遊藝場':
-                                        if place['addressComponents']['types']=='subpremise':  ## 在樓層裡面的不算
-                                            continue
-                                            
                                     print("Adding nearby landmarks to landmarks1:", data_store1)
                                     landmarks.append(data_store1)
+                                    
                      # 處理 autocomplete 搜尋
                     if (search_method_type == 'autocomplete_only' or 
                         (search_method_type == 'nearby_first' and not found_in_nearby)):
@@ -127,31 +135,29 @@ class LandmarkSearch:
                                 included_types=auto_params['includedTypes']
                             )
                             
-                            print("[DEBUG] autocomplete_search() 回傳:", auto_results)
+                            #print("[DEBUG] autocomplete_search() 回傳:", auto_results)
                             if auto_results:
                                 for prediction in auto_results['suggestions']:
-
                                     ## 篩選傳統市場不能包含旁邊的小吃店跟餐廳
                                     if case_type == "005" and case['case_type'] =='傳統市場':
-                                        if any(s in ["restaurant", "deli","store", "food","food_store"] for s in prediction['placePrediction']['types']):
+                                        if any(s in prediction['placePrediction']['types'] for s in ["restaurant", "deli", "food"]):
                                             continue
-                                        if all(s not in ["point_of_interest","market","establishment"] for s in prediction['placePrediction']['types']):
-                                            continue
-                                        if all(s not in ["point_of_interest","tourist_attraction", "market","establishment"] for s in prediction['placePrediction']['types']):
+                                        if not all(s in prediction['placePrediction']['types'] for s in ["point_of_interest", "market","establishment"]):
                                             continue
                                         
                                     if case_type == "005" and case['case_type'] =="超級市場":
-                                        if '超市' in prediction['placePrediction']['text']['text']:  ##名子有超市不行 (家樂福超市)
-                                            continue
-                                        if any(s not in ['好市多', "愛買", "家樂福", "大潤發", "大買家"]  for s in prediction['placePrediction']['text']['text']):
+                                        # if '超市' in prediction['placePrediction']['text']['text']:  ##名子有超市不行 (家樂福超市)
+                                        #     continue
+                                        supermarket = ['好市多', "愛買", "家樂福", "大潤發", "大買家", "全聯"]
+                                        if not any(s in prediction['placePrediction']['text']['text'] for s in supermarket):
                                              continue
-                                        if any(s in ["restaurant", "deli","parking"] for s in prediction['placePrediction']['types']):  ## 餐廳/停車場等附屬設施也不行
+                                        if any(s in prediction['placePrediction']['types'] for s in ["restaurant", "deli","parking"]):  ## 餐廳/停車場等附屬設施也不行
                                             continue
-
                                     if case_type == "020" and case['case_type']=='垃圾場':
-                                        if any(s in ['管辦大樓', '辦公大樓'] for s in prediction['placePrediction']['text']['text']):
+                                        if any(s in prediction['placePrediction']['text']['text'] for s in  ['管辦大樓', '辦公大樓']):
                                             continue
-                                    
+                                            
+                                    ## adding data_store_autosearch landmarks
                                     data_store = {
                                         'case_type': case_type,
                                         'case_kind':type_info['case_kind'],
@@ -162,8 +168,7 @@ class LandmarkSearch:
                                         'feature_types': case['case_type']
                                     }
                                     print("Adding auto landmarks to landmarks:", data_store)
-                                    if data_store:
-                                        landmarks.append(data_store)
+                                    landmarks.append(data_store)
                                         
                     if search_method_type == 'local_only':
                         local_results = local_search.find_nearby_landmarks(
@@ -186,9 +191,10 @@ class LandmarkSearch:
                                     "radius":None,
                                     "feature_types":result['feature_types']
                                 }
-                                if data_store:
-                                    print("Adding local landmarks to landmarks:", data_store)
-                                    landmarks.append(data_store)
+                                
+                                print("Adding local landmarks to landmarks:", data_store)
+                                landmarks.append(data_store)
+                               
                     elif search_method_type=='shap_only':
                         shap_results = local_search.find_point_by_shap(
                             latitude=lat,
@@ -212,81 +218,84 @@ class LandmarkSearch:
                         else:
                             pass
                             
-                    ## google map searched items--
-                    # 使用字典來存儲唯一的地標，key 為 (place_id, feature_types) 組合
-                    unique_landmarks = {}
-                    for landmark in landmarks:
-                        if 'place_id' in landmark:
-                            # 使用 tuple 作為 key，因為它是不可變的
-                            unique_key = (landmark['place_id'], landmark.get('feature_types', ''))
-                            if unique_key not in unique_landmarks:
-                                unique_landmarks[unique_key] = landmark
+                ## google map searched items--
+                # 使用字典來存儲唯一的地標，key 為 (place_id, feature_types) 組合
+                unique_landmarks = {}
+                for landmark in landmarks:
+                    if 'place_id' in landmark:
+                        # 使用 tuple 作為 key，因為它是不可變的
+                        unique_key = (landmark['place_id'], landmark.get('feature_types', ''))
+                        if unique_key not in unique_landmarks:
+                            unique_landmarks[unique_key] = landmark
 
-                    # 將唯一的地標轉換回列表
-                    landmarks = list(unique_landmarks.values())
+                # 將唯一的地標轉換回列表
+                landmarks = list(unique_landmarks.values())
 
-                    # 然後再進行距離檢查和其他處理
-                    valid_landmarks = []  # 先收集所有有效的地標
-                    landmark_cache = {}
-                    
-                    # 計算所有地標的距離
-                    for landmark in landmarks:
-                        if 'place_id' in landmark:
-                            if landmark['place_id'] not in landmark_cache:
-                                distance_result = google_places.calculate_distance_matrix(
-                                    origin_lat=lat,
-                                    origin_lng=lon,
-                                    destination_id=landmark['destination']
-                                )
-                                if distance_result and distance_result['rows'][0]['elements'][0]['status'] == 'OK':
-                                    walking_distance = distance_result['rows'][0]['elements'][0]['distance']['value']
-                                    landmark_cache[landmark['place_id']] = walking_distance
-                                    landmark['radius'] = walking_distance
-                            else:
-                                landmark['radius'] = landmark_cache[landmark['place_id']]
-                            
-                            # 檢查距離是否在範圍內
-                            if landmark.get('radius') and landmark['radius'] <= case['distance']:
-                                valid_landmarks.append({
-                                    'item': landmark.get('feature_types', ''),
-                                    'item_name': landmark['name'],
-                                    #'case_kind': landmark['case_kind'],
-                                    'radius': landmark['radius']  # 統一使用 radius
-                                })
+                # 然後再進行距離檢查和其他處理
+                valid_landmarks = []  # 先收集所有有效的地標
+                landmark_cache = {}
+                
+                # 計算所有地標的距離
+                for landmark in landmarks:
+                    if 'place_id' in landmark:
+                        if landmark['place_id'] not in landmark_cache:
+                            distance_result = google_places.calculate_distance_matrix(
+                                origin_lat=lat,
+                                origin_lng=lon,
+                                destination_id=landmark['destination']
+                            )
+                            if distance_result and distance_result['rows'][0]['elements'][0]['status'] == 'OK':
+                                walking_distance = distance_result['rows'][0]['elements'][0]['distance']['value']
+                                landmark_cache[landmark['place_id']] = walking_distance
+                                landmark['radius'] = walking_distance
+                                dist_details = {
+                                'item': landmark.get('feature_types', ''),
+                                'item_name': landmark['name'],
+                                'radius': landmark['radius']  # 統一使用 radius
+                            }
+                            print(f"[DEBUG] distance for items:{dist_details}")
                         else:
-                             landmark['radius'] = landmark_cache[landmark['place_id']]
-                        
-                    if valid_landmarks:
-                        valid_landmarks.sort(key=lambda x: x['radius'])
+                            landmark['radius'] = landmark_cache[landmark['place_id']]
+                        # 檢查距離是否在範圍內
+                        if landmark.get('radius') and landmark['radius'] <= case['distance']:
+                            valid_landmarks.append({
+                                'item': landmark.get('feature_types', ''),
+                                'item_name': landmark['name'],
+                                #'case_kind': landmark['case_kind'],
+                                'radius': landmark['radius']  # 統一使用 radius
+                            })
+                    else:
+                         landmark['radius'] = landmark_cache[landmark['place_id']]
+                    
+                if valid_landmarks:
+                    valid_landmarks.sort(key=lambda x: x['radius'])
 
-                    print("[DEBUG]-valid_landmarks:", valid_landmarks)
-                    
-                    # 去除重複的 feature_type，保留距離最近的
-                    unique_valid_items = {}
-                    
-                    for landmark in valid_landmarks:
-                        item = landmark['item']
-                        if item not in unique_valid_items:
-                            unique_valid_items[item] = landmark
-                            print(f"[DEBUG] unique_valid_items:{unique_valid_items}")
-                    
-                    # 將唯一的有效地標加入結果
-                    case_result['items']=list(unique_valid_items.values())
-                    
-                    ## case_result-> {'case_type': '004', 'case_kind': 'A', 'case_name': '以上小項皆無', 'score':0, 'items':[]}
+                print("[DEBUG]-valid_landmarks:", valid_landmarks)
+                
+                # 去除重複的 feature_type，保留距離最近的
+                unique_valid_items = {}
+                for landmark in valid_landmarks:
+                    item = landmark['item']
+                    if item not in unique_valid_items:
+                        unique_valid_items[item] = landmark
+                        print(f"[DEBUG] unique_valid_items:{unique_valid_items}")
+                
+                # 將唯一的有效地標加入結果
+                case_result['items']=list(unique_valid_items.values())
+                print("case_result:",case_result)
+                
+                ## case_result-> {'case_type': '004', 'case_kind': 'A', 'case_name': '以上小項皆無', 'score':0, 'items':[]}
                 results['Qitem'].append(case_result)
-            
+        
             except Exception as e:
                 print(f"Error processing {case_type}: {str(e)}")
                 case_result['items']=[]
                 results['Qitem'].append(case_result)
-                
-            print(f" [DEBUG] final_result-", results)
-            ## 加上鐵路距離計算
-            if self.shap_data_store:
-                results['Qitem'].append(self.shap_data_store)
 
-        
+        ## 加上鐵路距離計算
+        if self.shap_data_store:
+            results['Qitem'].append(self.shap_data_store)
+
         ## 加入其他小項皆無的題目
         item1 = {'case_type': '004', 'case_kind': 'A', 'case_name': '以上小項皆無', 'score':0, 'items':[]}
         item2 = {'case_type': '010', 'case_kind': 'B', 'case_name': '以上小項皆無', 'score':0, 'items':[]}
@@ -294,7 +303,7 @@ class LandmarkSearch:
         results['Qitem'].append(item1)
         results['Qitem'].append(item2)
         results['Qitem'].append(item3)
-
+    
             # 如果有符合條件的地標，設置分數
         for record in results['Qitem']:
             if record['items']:
@@ -307,5 +316,5 @@ class LandmarkSearch:
                 ## 否則是0分，預設是NULL
                 record['score'] = 0
         results["Qitem"] = sorted(results["Qitem"], key=lambda x: int(x["case_type"]))
-        
+            
         return results
